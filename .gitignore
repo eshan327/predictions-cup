@@ -10,3 +10,10 @@ __pycache__/
 data/raw/
 data/private/
 reports/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+STOP
+dist/
+build/

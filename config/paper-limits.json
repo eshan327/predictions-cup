@@ -1,0 +1,11 @@
+{
+  "reserve_cash": "50000",
+  "max_order_cost": "1000",
+  "max_added_cost": "5000",
+  "max_book_age": 15,
+  "max_account_age": 180,
+  "latency": 2,
+  "participation": "0.25",
+  "fee_per_share": "0",
+  "kill_file": "STOP"
+}
