@@ -3,7 +3,9 @@
 These are explicit *assumed* scenarios, not fitted election probabilities.
 All P&L is terminal settlement P&L, not mark-to-market.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from itertools import product
 
@@ -58,12 +60,13 @@ def analyze(positions: list[Position], scenarios: list[Scenario]) -> RiskReport:
     required = {p.contract for p in positions}
     if any(not required.issubset(s.outcomes) for s in scenarios):
         raise ValueError("some scenarios omit held contracts")
-    outcomes = [(s.name, s.probability,
-                 sum(pos.pnl(s.outcomes[pos.contract]) for pos in positions))
-                for s in scenarios]
+    outcomes = [
+        (s.name, s.probability, sum(pos.pnl(s.outcomes[pos.contract]) for pos in positions))
+        for s in scenarios
+    ]
     expected = sum(weight * pnl for _, weight, pnl in outcomes)
     # CVaR is the weighted average of the worst 5% of P&L.
-    tail_mass, tail_pnl = .05, 0.0
+    tail_mass, tail_pnl = 0.05, 0.0
     for _, weight, pnl in sorted(outcomes, key=lambda row: row[2]):
         taken = min(weight, tail_mass)
         tail_pnl += taken * pnl
@@ -76,7 +79,7 @@ def analyze(positions: list[Position], scenarios: list[Scenario]) -> RiskReport:
         worst_pnl=min(x[2] for x in outcomes),
         best_pnl=max(x[2] for x in outcomes),
         probability_of_loss=sum(w for _, w, pnl in outcomes if pnl < 0),
-        loss_cvar_95=-(tail_pnl / .05),
+        loss_cvar_95=-(tail_pnl / 0.05),
         scenarios=tuple(outcomes),
     )
 
@@ -94,11 +97,13 @@ def independent_scenarios(probabilities: dict[str, float]) -> list[Scenario]:
         for key, bit in zip(keys, bits):
             p = probabilities[key]
             weight *= p if bit else (1 - p)
-        output.append(Scenario(
-            name=",".join(f"{key}={int(bit)}" for key, bit in zip(keys, bits)),
-            probability=weight,
-            outcomes=dict(zip(keys, bits)),
-        ))
+        output.append(
+            Scenario(
+                name=",".join(f"{key}={int(bit)}" for key, bit in zip(keys, bits)),
+                probability=weight,
+                outcomes=dict(zip(keys, bits)),
+            )
+        )
     return output
 
 
@@ -109,10 +114,14 @@ def reject_invalid_scenarios(
 
     Reweighting is a conditional scenario distribution, NOT arbitrage by itself.
     """
+    if any(a not in s.outcomes or b not in s.outcomes for s in scenarios for a, b in implications):
+        raise ValueError("implication references missing outcomes")
     valid = [
-        s for s in scenarios
-        if not any(s.outcomes.get(a, False) and not s.outcomes.get(b, False)
-                   for a, b in implications)
+        s
+        for s in scenarios
+        if not any(
+            s.outcomes.get(a, False) and not s.outcomes.get(b, False) for a, b in implications
+        )
     ]
     weight = sum(x.probability for x in valid)
     if weight <= 0:
@@ -124,8 +133,8 @@ def recommend_max_additional_cost(
     initial_bankroll: float,
     existing: list[Position],
     *,
-    gross_fraction_limit: float = .4,
-    cash_reserve_fraction: float = .5,
+    gross_fraction_limit: float = 0.4,
+    cash_reserve_fraction: float = 0.5,
 ) -> float:
     """Simple conservative cash/basis budget, NOT a risk-aware portfolio optimizer."""
     if initial_bankroll <= 0 or not 0 <= gross_fraction_limit <= 1:
@@ -133,7 +142,10 @@ def recommend_max_additional_cost(
     if not 0 <= cash_reserve_fraction <= 1:
         raise ValueError("invalid reserve fraction")
     committed = sum(x.basis for x in existing)
-    return max(0.0, min(
-        initial_bankroll * gross_fraction_limit - committed,
-        initial_bankroll * (1 - cash_reserve_fraction) - committed,
-    ))
+    return max(
+        0.0,
+        min(
+            initial_bankroll * gross_fraction_limit - committed,
+            initial_bankroll * (1 - cash_reserve_fraction) - committed,
+        ),
+    )

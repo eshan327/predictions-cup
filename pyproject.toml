@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "predictions-cup"
-version = "0.1.0"
+version = "0.2.0"
 description = "Research-first systematic prediction-market trading"
 requires-python = ">=3.11"
-dependencies = ["httpx>=0.27", "pydantic>=2.0", "pandas>=2.0"]
+dependencies = ["httpx[socks]>=0.27,<1", "pydantic>=2.0,<3", "numpy>=1.26,<3", "scipy>=1.12,<2"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4.20"]
 
 [project.scripts]
 pcup = "predictions_cup.cli:main"
@@ -23,3 +23,6 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

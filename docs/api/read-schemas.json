@@ -1,0 +1,1157 @@
+{
+  "source": "https://sig.thesuper.market/api/v1/docs",
+  "retrieved": "2026-10-13",
+  "responses": {
+    "/account": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "00000000-0000-0000-0000-000000000001"
+        },
+        "username": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "example": "johndoe"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "example": "johndoe@gmail.com"
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2025-01-15T10:00:00.000Z"
+        },
+        "avatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "example": "https://example.com/avatar.png"
+        },
+        "bio": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "example": "Prediction market enthusiast."
+        },
+        "balance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "example": 1200.5,
+          "description": "Cash in the resolved scope: the requested or default tournament's balance, or the public-global cash balance. Null only for a legacy global profile with no balance."
+        },
+        "availableAdvance": {
+          "type": "number",
+          "minimum": 0,
+          "example": 100,
+          "description": "ALL advance the member's eligible relationship groups in the resolved scope can still lend; 0 while lending is off there or no group is eligible."
+        },
+        "buyingPower": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "example": 1300.5,
+          "description": "What a buy in the resolved scope can spend: `max(balance, 0) + availableAdvance`. Null only when `balance` is null."
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email",
+        "createdAt",
+        "avatarUrl",
+        "bio",
+        "balance",
+        "availableAdvance",
+        "buyingPower"
+      ]
+    },
+    "/tournaments/{slug}": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "slug": {
+          "type": "string",
+          "example": "alpha-tournament"
+        },
+        "name": {
+          "type": "string",
+          "example": "Alpha Tournament"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "example": "active"
+        },
+        "startDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "endDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "initialBalance": {
+          "type": "number",
+          "example": 1000
+        },
+        "currencyName": {
+          "type": "string",
+          "example": "coins"
+        },
+        "memberCount": {
+          "type": "integer",
+          "example": 12
+        },
+        "marketCount": {
+          "type": "integer",
+          "example": 5
+        },
+        "myBalance": {
+          "type": "number",
+          "example": 847.5,
+          "description": "Caller's cash balance in this tournament, rounded to 2 decimals; the seed balance before their first trade. Resting orders do not reserve any of it: cash moves only when orders fill. See `POST /orders` for how buys are admitted against it."
+        },
+        "isPendingEnrolment": {
+          "type": "boolean",
+          "example": false,
+          "description": "True when the caller can access an open tournament, or a private tournament of an organization they own or administer, but has not yet been enrolled."
+        }
+      },
+      "required": [
+        "id",
+        "slug",
+        "name",
+        "description",
+        "status",
+        "startDate",
+        "endDate",
+        "initialBalance",
+        "currencyName",
+        "memberCount",
+        "marketCount",
+        "myBalance",
+        "isPendingEnrolment"
+      ]
+    },
+    "/tournaments/{slug}/markets": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TournamentMarket"
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer"
+            },
+            "limit": {
+              "type": "integer"
+            },
+            "hasMore": {
+              "type": "boolean"
+            },
+            "nextCursor": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "total",
+            "limit",
+            "hasMore",
+            "nextCursor"
+          ]
+        }
+      },
+      "required": [
+        "data",
+        "pagination"
+      ]
+    },
+    "/orders": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Order"
+          }
+        },
+        "pagination": {
+          "$ref": "#/components/schemas/OrderPagination"
+        },
+        "coverage": {
+          "type": "object",
+          "properties": {
+            "complete": {
+              "type": "boolean",
+              "enum": [
+                true
+              ],
+              "example": true,
+              "description": "Always true because cursor pagination exposes the complete order history without window truncation."
+            },
+            "projectedThroughSequence": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "example": 184233,
+              "description": "Latest trading-engine sequence reflected by the reporting projection, or null when no checkpoint exists."
+            }
+          },
+          "required": [
+            "complete",
+            "projectedThroughSequence"
+          ],
+          "description": "Reporting projection coverage metadata for engine-backed history."
+        }
+      },
+      "required": [
+        "data",
+        "pagination"
+      ]
+    },
+    "/exchanges/{id}/orderbook": {
+      "type": "object",
+      "properties": {
+        "exchangeId": {
+          "type": "string",
+          "example": "36"
+        },
+        "marketId": {
+          "type": "string",
+          "example": "26"
+        },
+        "asOf": {
+          "$ref": "#/components/schemas/BookVersion"
+        },
+        "depth": {
+          "type": "integer",
+          "example": 20
+        },
+        "bids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ExchangeOrderbookLevel"
+          }
+        },
+        "asks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ExchangeOrderbookLevel"
+          }
+        },
+        "bestBid": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "example": 0.41
+        },
+        "bestAsk": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "example": 0.55
+        },
+        "spread": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "example": 0.14
+        }
+      },
+      "required": [
+        "exchangeId",
+        "marketId",
+        "asOf",
+        "depth",
+        "bids",
+        "asks",
+        "bestBid",
+        "bestAsk",
+        "spread"
+      ]
+    },
+    "/exchanges/{id}/trades": {
+      "type": "object",
+      "properties": {
+        "exchangeId": {
+          "type": "string",
+          "example": "36"
+        },
+        "marketId": {
+          "type": "string",
+          "example": "26"
+        },
+        "from": {
+          "type": "string",
+          "example": "1970-01-01T00:00:00.000Z"
+        },
+        "to": {
+          "type": "string",
+          "example": "2026-04-04T00:00:00.000Z"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ExchangeTrade"
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "example": 50
+            },
+            "hasMore": {
+              "type": "boolean",
+              "example": true
+            },
+            "nextCursor": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "example": null
+            }
+          },
+          "required": [
+            "limit",
+            "hasMore",
+            "nextCursor"
+          ]
+        },
+        "coverage": {
+          "type": "object",
+          "properties": {
+            "complete": {
+              "type": "boolean",
+              "example": true,
+              "description": "Always true because cursor pagination exposes the full requested trade history without window truncation."
+            },
+            "projectedThroughSequence": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "example": 184233,
+              "description": "Latest trading-engine sequence reflected by the reporting projection, or null when no checkpoint exists."
+            }
+          },
+          "required": [
+            "complete",
+            "projectedThroughSequence"
+          ],
+          "description": "Reporting projection coverage metadata. Always present."
+        }
+      },
+      "required": [
+        "exchangeId",
+        "marketId",
+        "from",
+        "to",
+        "data",
+        "pagination",
+        "coverage"
+      ]
+    },
+    "/tournaments/{slug}/portfolio/positions": {
+      "type": "object",
+      "properties": {
+        "positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TournamentPortfolioPosition"
+          }
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "totalMarketValue": {
+              "type": "number"
+            },
+            "totalCostBasis": {
+              "type": "number"
+            },
+            "totalUnrealizedPnl": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "totalMarketValue",
+            "totalCostBasis",
+            "totalUnrealizedPnl"
+          ]
+        }
+      },
+      "required": [
+        "positions",
+        "summary"
+      ]
+    },
+    "/tournaments/{slug}/portfolio/fills": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Fill"
+          }
+        },
+        "pagination": {
+          "$ref": "#/components/schemas/TournamentPagination"
+        },
+        "coverage": {
+          "type": "object",
+          "properties": {
+            "complete": {
+              "type": "boolean",
+              "enum": [
+                true
+              ],
+              "example": true,
+              "description": "Always true because cursor pagination exposes the complete portfolio fill history."
+            },
+            "projectedThroughSequence": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "example": 184233,
+              "description": "Latest trading-engine sequence reflected by the reporting projection, or null when no checkpoint exists."
+            }
+          },
+          "required": [
+            "complete",
+            "projectedThroughSequence"
+          ],
+          "description": "Reporting projection coverage metadata. Always present."
+        }
+      },
+      "required": [
+        "data",
+        "pagination",
+        "coverage"
+      ]
+    },
+    "/tournaments/{slug}/portfolio/settlements": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TournamentSettlementEntry"
+          }
+        },
+        "pagination": {
+          "$ref": "#/components/schemas/TournamentPagination"
+        },
+        "coverage": {
+          "$ref": "#/components/schemas/TournamentEconomicCommandCoverage"
+        }
+      },
+      "required": [
+        "data",
+        "pagination",
+        "coverage"
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "BookVersion": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "example": 4817,
+            "description": "The last engine event applied to the book."
+          },
+          "at": {
+            "type": "string",
+            "example": "2026-09-28T09:15:02.125+00:00",
+            "description": "The engine clock when the book was read."
+          }
+        },
+        "required": [
+          "sequence",
+          "at"
+        ],
+        "description": "The engine version an exchange's book was captured at, the same `asOf` the realtime book push carries. Versions compare by `sequence`, then `at`. Null when the book was read from the database, which has no version."
+      },
+      "ExchangeOrderbookLevel": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "example": 0.55
+          },
+          "quantity": {
+            "type": "number",
+            "example": 300
+          }
+        },
+        "required": [
+          "price",
+          "quantity"
+        ]
+      },
+      "ExchangeTrade": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "98342",
+            "description": "Trade identifier: the trading-engine trade sequence for engine-recorded trades, or the legacy trade ID for pre-cutover trades. The two are separate ID spaces."
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-04-04T18:23:11.000Z"
+          },
+          "price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 0.42,
+            "description": "YES-normalized fill price."
+          },
+          "size": {
+            "type": "integer",
+            "example": 100,
+            "description": "Shares traded (absolute value of the underlying signed quantity)."
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "YES",
+              "NO"
+            ],
+            "example": "YES",
+            "description": "Whether the fill happened in YES or NO space."
+          },
+          "volume": {
+            "type": "number",
+            "example": 42,
+            "description": "Notional volume. Engine-recorded trades report `size` \u00d7 the executed side's price, unrounded; pre-cutover trades report the stored trade volume."
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "price",
+          "size",
+          "side",
+          "volume"
+        ]
+      },
+      "Fill": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 5001,
+            "description": "Trade identifier, shared by both counterparties' fills of the same trade. Engine-recorded fills use the trading-engine trade sequence; pre-cutover fills use the legacy trade ID \u2014 the two are separate ID spaces. Not an order ID \u2014 use orderId to look up the associated order."
+          },
+          "orderId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "example": 1001,
+            "description": "The order that was filled. Use this ID with GET /orders/{id}."
+          },
+          "exchangeId": {
+            "type": "string",
+            "example": "36"
+          },
+          "marketId": {
+            "type": "string",
+            "example": "26"
+          },
+          "price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 0.42,
+            "description": "Per-share price of the outcome that traded: a NO fill reports the NO price. Realtime `fills[].price` and `trades[].price` are YES-denominated instead, so a NO fill at 0.30 here is 0.70 there."
+          },
+          "quantity": {
+            "type": "number",
+            "example": 100,
+            "description": "Outcome-signed fill quantity; negative values indicate the NO side."
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ],
+            "example": "yes"
+          },
+          "filledAt": {
+            "type": "string",
+            "example": "2025-06-14T12:05:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "orderId",
+          "exchangeId",
+          "marketId",
+          "price",
+          "quantity",
+          "side",
+          "filledAt"
+        ]
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1001
+          },
+          "exchangeId": {
+            "type": "string",
+            "example": "36"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ],
+            "example": "yes"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "buy",
+              "sell"
+            ],
+            "example": "buy"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 100,
+            "description": "Always positive. Use `side` to determine YES/NO direction. While `open` is true this is the executable remainder; a closed order reports its unfilled remainder plus everything it filled. Orders whose remainder was discarded before they closed \u2014 legacy market orders, which never rest, and orders shrunk to fit a decreased balance \u2014 therefore report the reduced size rather than the quantity originally submitted."
+          },
+          "priceLimit": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 0.42
+          },
+          "open": {
+            "type": "boolean",
+            "description": "True if the order is still resting on the book and not expired. The engine closes expired orders in a sweep that runs every few seconds, so an order can briefly show `open: true` past its `expirationDate`; orders placed before the engine cutover can stay that way. A closed order's `terminalReasonCode` tells an expiry from another cancellation; it is null for orders placed before the engine, so use `status=expired` to find those."
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2025-06-14T12:00:00.000Z"
+          },
+          "expirationDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ISO-8601 order expiration timestamp, or null when no expiration was set. Reporting-backed orders preserve the engine order's expiration timestamp."
+          },
+          "tournamentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000",
+            "description": "Tournament whose orderbook and balance the order belongs to, or null for a public-global order."
+          },
+          "terminalReasonCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Expired",
+            "description": "The trading engine's reason code for a closed order, such as `Expired` or `SelfTradePrevented`. Null while `open` is true and when no reason was recorded, which includes every order placed before the trading engine."
+          },
+          "quantityFilled": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "example": 40,
+            "description": "Always positive. Total quantity a closed order filled; `quantity` minus this is what closed unfilled. Null while `open` is true \u2014 read the order's fills for a resting order's progress."
+          }
+        },
+        "required": [
+          "id",
+          "exchangeId",
+          "side",
+          "action",
+          "quantity",
+          "priceLimit",
+          "open",
+          "createdAt",
+          "expirationDate",
+          "tournamentId",
+          "terminalReasonCode",
+          "quantityFilled"
+        ]
+      },
+      "OrderPagination": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "example": 50
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "limit",
+          "hasMore",
+          "nextCursor"
+        ]
+      },
+      "TournamentEconomicCommandCoverage": {
+        "type": "object",
+        "properties": {
+          "complete": {
+            "type": "boolean",
+            "example": true,
+            "description": "False when the economic-command history walk reached its hard 20-page budget before it found enough matching events or exhausted the log."
+          }
+        },
+        "required": [
+          "complete"
+        ]
+      },
+      "TournamentMarket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "26"
+          },
+          "title": {
+            "type": "string",
+            "example": "Will US unemployment rate be below 4% on Jan 1, 2026?"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "settled"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "settlementDate": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "settledWith": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "settledOn": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Effective settlement timestamp in this tournament context. When the tournament has its own ruling, this is the tournament-scoped settlement timestamp."
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isComposite": {
+            "type": "boolean"
+          },
+          "isMultiOutcome": {
+            "type": "boolean"
+          },
+          "exchanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "option": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "latestPrice": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "Tournament-specific latest traded price. Null when no tournament trade has established a price; the tournament orderbook may still contain bids and asks. It never falls back to the global price."
+                },
+                "initialPrice": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "option",
+                "latestPrice",
+                "initialPrice"
+              ]
+            }
+          },
+          "creator": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "username"
+            ]
+          },
+          "thumbnailUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market header image URL, or null."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status",
+          "createdAt",
+          "settlementDate",
+          "settledWith",
+          "settledOn",
+          "categories",
+          "isComposite",
+          "isMultiOutcome",
+          "exchanges",
+          "creator",
+          "thumbnailUrl"
+        ]
+      },
+      "TournamentPagination": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer"
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "limit",
+          "hasMore",
+          "nextCursor"
+        ]
+      },
+      "TournamentPortfolioPosition": {
+        "type": "object",
+        "properties": {
+          "exchangeId": {
+            "type": "string",
+            "example": "36"
+          },
+          "marketId": {
+            "type": "string",
+            "example": "26"
+          },
+          "marketTitle": {
+            "type": "string"
+          },
+          "option": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "settled": {
+            "type": "boolean"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Positive = YES shares, negative = NO shares."
+          },
+          "avgCost": {
+            "type": "number"
+          },
+          "currentPrice": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Tournament valuation price. Null only for zero-quantity rows; nonzero holdings without a valuation return 409."
+          },
+          "marketValue": {
+            "type": "number"
+          },
+          "costBasis": {
+            "type": "number"
+          },
+          "unrealizedPnl": {
+            "type": "number"
+          },
+          "unrealizedPnlPct": {
+            "type": "number"
+          },
+          "moneyEarned": {
+            "type": "number",
+            "description": "Realized cash from prior closes on this position. Engine-backed positions report 0; legacy positions report the stored realized close proceeds."
+          },
+          "lots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lotId": {
+                  "type": "string"
+                },
+                "side": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "entryPrice": {
+                  "type": "number"
+                },
+                "openedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "lotId",
+                "side",
+                "quantity",
+                "entryPrice",
+                "openedAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "exchangeId",
+          "marketId",
+          "marketTitle",
+          "option",
+          "settled",
+          "quantity",
+          "avgCost",
+          "currentPrice",
+          "marketValue",
+          "costBasis",
+          "unrealizedPnl",
+          "unrealizedPnlPct",
+          "moneyEarned",
+          "lots"
+        ]
+      },
+      "TournamentSettlementEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Legacy entries use a UUID; engine-recorded entries use `engine-<sequence>`."
+          },
+          "type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "win",
+              "loss",
+              "refund",
+              "correction",
+              null
+            ],
+            "example": "win"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "2026-04-04T18:00:00.000Z"
+          },
+          "marketId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "26"
+          },
+          "marketTitle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "exchangeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "36"
+          },
+          "settlementOption": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "YES"
+          },
+          "settlementOutcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "YES",
+            "description": "The outcome the market resolved to (from settlement metadata). Null for engine-recorded entries."
+          },
+          "shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 100,
+            "description": "Share quantity reported by this settlement entry; null when unavailable. Do not infer YES/NO direction from its sign."
+          },
+          "avgEntryPrice": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 0.42,
+            "description": "Null for engine-recorded entries."
+          },
+          "costBasis": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 42,
+            "description": "Null for engine-recorded entries."
+          },
+          "payout": {
+            "type": "number",
+            "example": 100,
+            "description": "Cash credited to the tournament virtual balance (or 0 for losses)."
+          },
+          "realizedPnl": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 58,
+            "description": "Null for engine-recorded entries."
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "createdAt",
+          "marketId",
+          "marketTitle",
+          "exchangeId",
+          "settlementOption",
+          "settlementOutcome",
+          "shares",
+          "avgEntryPrice",
+          "costBasis",
+          "payout",
+          "realizedPnl"
+        ]
+      }
+    }
+  }
+}
