@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "predictions-cup"
+version = "0.1.0"
+description = "Research-first systematic prediction-market trading"
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.27", "pydantic>=2.0", "pandas>=2.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+pcup = "predictions_cup.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
