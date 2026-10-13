@@ -37,10 +37,10 @@ The user supplied an October 13 portfolio screenshot (NOT wired into trading):
 | Position | Shares | Mean paid | Approx capital |
 |---|---:|---:|---:|
 | Maine Democratic YES | 17,318 | 0.577 | 9,992.49 |
-| NY-17 Democratic YES | 12,638 | 0.633 | 8,000.45 |
+| NY-17 Democratic YES | 12,638 | 0.633 | 7,999.85 |
 | Republican Senate NO | 26,548 | 0.565 | 14,999.62 |
 
-Total committed is about 32,992.56 SUSQies. All are directionally exposed to a favorable Democratic election environment. A new allocation engine should ingest actual holdings from account endpoints and *not* assume these are the only positions, that the screenshot is current, or that average cost equals fair probability.
+Total committed is about 32,991.96 SUSQies. All are directionally exposed to a favorable Democratic election environment. A new allocation engine should ingest actual holdings from account endpoints and *not* assume these are the only positions, that the screenshot is current, or that average cost equals fair probability.
 
 ## Security
 
